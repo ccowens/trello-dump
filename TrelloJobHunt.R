@@ -1,9 +1,10 @@
 if(!require(trelloR)) {install.packages("trelloR"); library(trelloR)}
 if(!require(purrr)) {install.packages("purrr"); library(purrr)}
 if(!require(dplyr)) {install.packages("dplyr"); library(dplyr)}
+if(!require(writexl)) {install.packages("writexl"); library(writexl)}
 
 # Set up the Trello API connection and get the id for the boatd -----------
-my_token = get_token("my-app", 
+my_token = get_token("my-app",
                      key = Sys.getenv("MY_TRELLOAPI_KEY"), 
                      secret = Sys.getenv("MY_TRELLOAPI_SECRET"))
 
@@ -40,7 +41,7 @@ assigned_labels <- the_cards$idLabels %>%
   as.data.frame(nm="id")
 
 # Replace the ids with the actual label names in another 1-column data frame
-# that lines up each lable name with the right card. Merge this into the data 
+# that lines up each label name with the right card. Merge this into the data 
 # frame of cards
 ordered_labels <- left_join(assigned_labels, the_label_ids) %>% 
   select(-id)
@@ -55,12 +56,14 @@ the_cards <- left_join(the_cards, the_list_ids) %>%
   select(-idList)
 
 
-# Clean up and sort -------------------------------------------------------
+# Clean up, sort, and save as Excel and CSV  ------------------------------
 
 the_cards <- select(the_cards, -id) %>% 
   mutate(ApplyDate=as.Date(due), .keep="unused") %>% 
   rename(Job=name, LocationType=label, Status=list) %>% 
-  filter(Status %in% c("Create/Prep","Applied/Submitted","Interview","Rejected","Deadpool (After App)")) %>% 
+  filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
+                       "Rejected","Deadpool (After App)")) %>% 
   group_by(ApplyDate) %>% 
   arrange(ApplyDate)
 
+write_xlsx(the_cards, "ApplicationTracker.xlsx")
