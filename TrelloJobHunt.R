@@ -56,7 +56,7 @@ the_cards <- left_join(the_cards, the_list_ids) %>%
   select(-idList)
 
 
-# Clean up, sort, and save as Excel and CSV  ------------------------------
+# Clean up, sort, and save as Excel ---------------------------------------
 
 the_cards <- select(the_cards, -id) %>% 
   mutate(ApplyDate=as.Date(due), .keep="unused") %>% 
