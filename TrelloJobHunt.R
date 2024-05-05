@@ -2,6 +2,8 @@ if(!require(trelloR)) {install.packages("trelloR"); library(trelloR)}
 if(!require(purrr)) {install.packages("purrr"); library(purrr)}
 if(!require(dplyr)) {install.packages("dplyr"); library(dplyr)}
 if(!require(writexl)) {install.packages("writexl"); library(writexl)}
+if(!require(stringr)) {install.packages("stringr"); library(stringr)}
+if(!require(tidyr)) {install.packages("tidyr"); library(tidyr)}
 
 # Set up the Trello API connection and get the id for the boatd -----------
 my_token = get_token("my-app",
@@ -55,11 +57,17 @@ the_cards <- left_join(the_cards, the_list_ids) %>%
   select(-idList)
 
 
+# Split the name field into Job and Company -------------------------------
+
+the_cards <- the_cards %>% 
+  mutate(name = str_replace(name, "\\(([^)]+)\\)", "\\1: ")) %>% 
+  separate(name, into=c("Company","Job"), sep=": ", extra="merge")
+
 # Clean up, sort, and save as Excel ---------------------------------------
 
 the_cards <- select(the_cards, -id) %>% 
   mutate(ApplyDate=as.Date(due), .keep="unused") %>% 
-  select(Job=name, ApplyDate, Status=list, 
+  select(Job, Company, ApplyDate, Status=list, 
          LocationType=label, LinkToCard=shortUrl, Notes=desc) %>%
   filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
                        "Rejected","Deadpool (After App)")) %>% 
