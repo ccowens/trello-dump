@@ -26,8 +26,7 @@ the_label_ids <- get_board_labels(the_board) %>%
 # Grab the cards ----------------------------------------------------------
 
 the_cards <- get_board_cards(the_board) %>% 
-  select(id,idList,idLabels,name,due,shortUrl,email,desc)
-
+  select(id,idList,idLabels,name,due,shortUrl,desc)
 
 # Figure out the labels for each card -------------------------------------
 
@@ -60,10 +59,13 @@ the_cards <- left_join(the_cards, the_list_ids) %>%
 
 the_cards <- select(the_cards, -id) %>% 
   mutate(ApplyDate=as.Date(due), .keep="unused") %>% 
-  rename(Job=name, LocationType=label, Status=list) %>% 
+  select(Job=name, ApplyDate, Status=list, 
+         LocationType=label, LinkToCard=shortUrl, Notes=desc) %>%
   filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
                        "Rejected","Deadpool (After App)")) %>% 
   group_by(ApplyDate) %>% 
   arrange(ApplyDate)
 
-write_xlsx(the_cards, "ApplicationTracker.xlsx")
+the_cards %>% 
+  mutate(LinkToCard = xl_hyperlink(LinkToCard,LinkToCard), .keep="unused") %>% 
+  write_xlsx("ApplicationTracker.xlsx")
