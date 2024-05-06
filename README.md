@@ -3,7 +3,7 @@ Demonstrating using trelloR package to get useful information out of a Trello bo
 
 | Trello Card Feature | How Used in Board        |
 | ------------------- | ------------------------ |
-| Card Title          | Job Title + Company Name |
+| Card Title          | \(Company\) Job Title    |
 | Label               | Location type            |
 | Due Date            | Application date         |
 | List                | Stage of job application |
