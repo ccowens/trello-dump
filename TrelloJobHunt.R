@@ -20,6 +20,7 @@ the_board <- get_my_boards() %>%
 the_list_ids <- get_board_lists(the_board) %>% 
   select(id, name) %>% 
   rename(list=name, idList=id)
+
 the_label_ids <- get_board_labels(the_board) %>% 
   select(id, name) %>% 
   rename(label=name)
@@ -56,19 +57,29 @@ the_cards <- bind_cols(the_cards, ordered_labels) %>%
 the_cards <- left_join(the_cards, the_list_ids) %>% 
   select(-idList)
 
-
 # Split the name field into Job and Company -------------------------------
 
 the_cards <- the_cards %>% 
-  mutate(name = str_replace(name, "\\(([^)]+)\\)", "\\1: ")) %>% 
-  separate(name, into=c("Company","Job"), sep=": ", extra="merge")
+  mutate(name = str_replace(name, "\\(([^)]+)\\) ", "\\1: ")) %>% 
+  separate(name, into=c("Company","Job"), sep=": ", extra="merge", fill="right")
+
+
+# Add card created date ---------------------------------------------------
+
+# Use the trick that the first 8 characters of the card id are a timestamp 
+# as a hex number of when the card was created
+
+the_cards <- the_cards %>% 
+  mutate(timestamp = strtoi(substring(id, 1, 8), base=16)) %>% 
+  mutate(CardCreated = as.Date(as.POSIXct(timestamp, origin = "1970-01-01"))) %>% 
+  select(-timestamp)
 
 # Clean up, sort, and save as Excel ---------------------------------------
 
 the_cards <- select(the_cards, -id) %>% 
   mutate(ApplyDate=as.Date(due), .keep="unused") %>% 
   select(Job, Company, ApplyDate, Status=list, 
-         LocationType=label, LinkToCard=shortUrl, Notes=desc) %>%
+         LocationType=label, LinkToCard=shortUrl, Notes=desc, CardCreated) %>%
   filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
                        "Rejected","Deadpool (After App)")) %>% 
   group_by(ApplyDate) %>% 
