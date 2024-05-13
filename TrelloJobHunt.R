@@ -4,6 +4,7 @@ if(!require(dplyr)) {install.packages("dplyr"); library(dplyr)}
 if(!require(writexl)) {install.packages("writexl"); library(writexl)}
 if(!require(stringr)) {install.packages("stringr"); library(stringr)}
 if(!require(tidyr)) {install.packages("tidyr"); library(tidyr)}
+if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
 
 # Set up the Trello API connection and get the id for the boatd -----------
 my_token = get_token("my-app",
@@ -77,8 +78,13 @@ the_cards <- the_cards %>%
 # Clean up, sort, and save as Excel ---------------------------------------
 
 the_cards <- select(the_cards, -id) %>% 
-  mutate(ApplyDate=as.Date(due), .keep="unused") %>% 
-  select(Job, Company, ApplyDate, Status=list, 
+  mutate(ApplyDate=as.Date(due),
+         ApplyWeek=ifelse(is.na(ApplyDate),
+                          "",
+                          paste0(year(ApplyDate),
+                                 sprintf("%02d", epiweek(ApplyDate)))),
+         .keep="unused") %>% 
+  select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
          LocationType=label, LinkToCard=shortUrl, Notes=desc, CardCreated) %>%
   filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
                        "Rejected","Deadpool (After App)")) %>% 
