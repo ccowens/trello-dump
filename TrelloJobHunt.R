@@ -5,8 +5,10 @@ if(!require(writexl)) {install.packages("writexl"); library(writexl)}
 if(!require(stringr)) {install.packages("stringr"); library(stringr)}
 if(!require(tidyr)) {install.packages("tidyr"); library(tidyr)}
 if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
+if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
 
-# Set up the Trello API connection and get the id for the boatd -----------
+
+# Set up the Trello API connection and get the id for the board -----------
 my_token = get_token("my-app",
                      key = Sys.getenv("MY_TRELLOAPI_KEY"), 
                      secret = Sys.getenv("MY_TRELLOAPI_SECRET"))
