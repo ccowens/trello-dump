@@ -81,7 +81,8 @@ the_cards <- select(the_cards, -id) %>%
   mutate(ApplyDate=as.Date(due),
          ApplyWeek=ifelse(is.na(ApplyDate),
                           "",
-                          paste0(year(ApplyDate),
+                          paste0(year(ceiling_date(ApplyDate, unit = "week", 
+                                                   week_start="Sunday") - days(1)),
                                  sprintf("%02d", epiweek(ApplyDate)))),
          .keep="unused") %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
@@ -97,4 +98,5 @@ the_cards %>%
 
 # Save the_cards as an RDS file for use in further processing -------------
 saveRDS(the_cards, "the_cards.rds")
+
 
