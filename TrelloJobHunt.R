@@ -94,3 +94,7 @@ the_cards <- select(the_cards, -id) %>%
 the_cards %>% 
   mutate(LinkToCard = xl_hyperlink(LinkToCard,LinkToCard), .keep="unused") %>% 
   write_xlsx("ApplicationTracker.xlsx")
+
+# Save the_cards as an RDS file for use in further processing -------------
+saveRDS(the_cards, "the_cards.rds")
+
