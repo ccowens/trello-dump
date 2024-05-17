@@ -77,6 +77,41 @@ the_cards <- the_cards %>%
   mutate(CardCreated = as.Date(as.POSIXct(timestamp, origin = "1970-01-01"))) %>% 
   select(-timestamp)
 
+
+# Extract info from the Trello description field --------------------------
+
+## The first four lines (Markdown) are reserved for set fields to extract
+
+LinkToJob <- str_split_i(the_cards$desc, "\n", 1) %>% 
+  str_remove(., "^- \\*\\*Link:\\*\\* ") %>% 
+  str_extract(., "^\\[(.*)\\]") %>% 
+  str_remove_all(., "\\[|\\]")
+
+Location <- str_split_i(the_cards$desc, "\n", 2) %>%
+  str_remove(., "^- \\*\\*Location:\\*\\* ") 
+
+InterviewedLast <- str_split_i(the_cards$desc, "\n", 3) %>%
+  str_remove(., "^- \\*\\*Interview Date:\\*\\*") %>% 
+  as.Date(., format = "%m/%d/%Y")
+
+Rejected <- str_split_i(the_cards$desc, "\n", 4) %>%
+  str_remove(., "^- \\*\\*Rejected Date:\\*\\* ") %>% 
+  as.Date(., format = "%m/%d/%Y")
+
+## Put anything else in the description field into a separate column
+
+the_cards$OtherNotes <- lapply(
+  str_split(the_cards$desc, "\n"), 
+  function(x)  str_flatten(x[5:length(x)])) %>% 
+  unlist()
+
+## Combine the extracted fields into a data frame and add the columns in
+
+FromNotes <- data.frame(LinkToJob, Location, InterviewedLast, Rejected)
+
+the_cards <- bind_cols(the_cards, FromNotes) %>% 
+  select(-desc)
+
 # Clean up, sort, and save as Excel ---------------------------------------
 
 the_cards <- select(the_cards, -id) %>% 
@@ -88,7 +123,7 @@ the_cards <- select(the_cards, -id) %>%
                                  sprintf("%02d", epiweek(ApplyDate)))),
          .keep="unused") %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
-         LocationType=label, LinkToCard=shortUrl, Notes=desc, CardCreated) %>%
+         LocationType=label, LinkToCard=shortUrl, LinkToJob, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
   filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
                        "Rejected","Deadpool (After App)")) %>% 
   group_by(ApplyDate) %>% 
