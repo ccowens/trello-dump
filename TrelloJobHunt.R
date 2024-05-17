@@ -130,7 +130,9 @@ the_cards <- select(the_cards, -id) %>%
   arrange(ApplyDate)
 
 the_cards %>% 
-  mutate(LinkToCard = xl_hyperlink(LinkToCard,LinkToCard), .keep="unused") %>% 
+  mutate(LinkToCard = xl_hyperlink(LinkToCard,"X"), 
+         LinkToJob = xl_hyperlink(LinkToJob,"X"),
+         .keep="unused") %>% 
   write_xlsx("ApplicationTracker.xlsx")
 
 # Save the_cards as an RDS file for use in further processing -------------
