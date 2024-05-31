@@ -122,18 +122,21 @@ the_cards <- select(the_cards, -id) %>%
                           paste0(year(ceiling_date(ApplyDate, unit = "week", 
                                                    week_start="Sunday") - days(1)),
                                  sprintf("%02d", epiweek(ApplyDate)))),
-         .keep="unused") %>% 
+         LinkToCompany=paste0("https://duckduckgo.com/html?q=\'",
+                              URLencode(Company, TRUE),
+                              " company\'")) %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
-         LocationType=label, LinkToCard=shortUrl, LinkToJob, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
+         LocationType=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
   filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
                        "Rejected","No Response")) %>% 
   group_by(ApplyDate) %>% 
   arrange(ApplyDate)
 
 the_cards %>% 
-  mutate(LinkToCard = xl_hyperlink(LinkToCard,"X"), 
-         LinkToJob = xl_hyperlink(LinkToJob,"X"),
-         .keep="unused") %>% 
+  mutate(
+    LinkToCard = xl_hyperlink(LinkToCard,"card"), 
+    LinkToJob = xl_hyperlink(LinkToJob,"listing"),
+    LinkToCompany = xl_hyperlink(LinkToCompany,"company")) %>% 
   write_xlsx("ApplicationTracker.xlsx")
 
 # Save the_cards as an RDS file for use in further processing -------------
