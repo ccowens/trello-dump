@@ -10,6 +10,9 @@ if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
 # imported functions from them used
 
 # Set up the Trello API connection and get the id for the board -----------
+
+# I use a local .Renviron file in the project folder to store the key
+# and secret
 my_token = get_token("my-app",
                      key = Sys.getenv("MY_TRELLOAPI_KEY"), 
                      secret = Sys.getenv("MY_TRELLOAPI_SECRET"))
