@@ -130,8 +130,8 @@ the_cards <- select(the_cards, -id) %>%
                               " company\'")) %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
          LocationType=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
-  filter(Status %in% c("Create/Prep","Applied/Submitted","Interview",
-                       "Rejected","No Response")) %>% 
+  filter(Status %in% c("Preparing","Applied","Interview",
+                       "Rejected","No Response", "Offer", "Accepted", "Declined")) %>% 
   group_by(ApplyDate) %>% 
   arrange(ApplyDate)
 
