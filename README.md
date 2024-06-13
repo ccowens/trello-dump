@@ -5,7 +5,21 @@ This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://git
 -   An Excel file
 -   An R RDS file
 
-The Excel file can be used as a convenient activity overview or for further graphic or data processing. Likewise, the RDS file is an R-specific format that can be used for further processing in R. 
+The Excel file can be used as a convenient activity overview or for further graphic or data processing. Likewise, the RDS file is an R-specific format that can be used for further processing in R. I use **TrelloJobHunt.Rmd**. 
+
+```mermaid
+graph 
+    Z[Trello] --- Y(My Job Hunting Board)
+    Y --> X[Trello API] 
+    X <--> W[trelloR package] 
+    W --> A
+    A[[TrelloJobHunt.R]] --> B[(XLSX file)]
+    A --> C[(RDS file)]
+    B --> D[Excel...or GoogleSheets...or]
+    C --> E[[TrelloJobHunt.Rmd]]
+    C --> F[[Some other R script]]
+   
+```
 
 
 ## Data collected from Trello entry
