@@ -1,0 +1,135 @@
+---
+title: "Exploring My Job Hunt"
+author: "Charley Cowens"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+---
+
+
+```{r packages, include=FALSE}
+if(!require(dplyr)) {install.packages("dplyr"); library(dplyr)}
+if(!require(magrittr)) {install.packages("magrittr"); library(magrittr)}
+if(!require(kableExtra)) {install.packages("kableExtra"); library(kableExtra)}
+if(!require(stringr)) {install.packages("stringr"); library(stringr)}
+if(!require(tm)) {install.packages("tm"); library(tm)}
+if(!require(ggplot2)) {install.packages("ggplot2"); library(ggplot2)}
+if(!require(wordcloud2)) {install.packages("wordcloud2"); library(wordcloud2)}
+if(!require(DiagrammeR)) {install.packages("DiagrammeR"); library(DiagrammeR)}
+   
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+the_cards <- readRDS("the_cards.rds") %>% 
+  filter(ApplyWeek >= "202401" | Status == "Preparing")
+```
+
+## Diagrams
+
+### The Flow from Status "Bucket" to "Bucket"
+
+```{r diagram1, echo=FALSE, fig.height=3, fig.width=6}
+mermaid("
+graph LR
+    A(Preparing) -->|Sent| B{Applied}
+    B -->|Arranged| C{Interview}
+    B -->|Bounced| D[Rejected]
+    C -->|Notified| D
+    C -->|Notified| E{Offer}
+    C -->|Waited long enough| F[No Response]
+    B --> |Waited long enough| F
+    E --> |Yes| G[Acceptance]
+    E --> |No| H[Declined]
+    style D fill:#f00
+    style F fill:#f00
+    style H fill:#f00
+  ")
+```
+
+### Current Count for Each Bucket
+
+```{r diagram2, echo=FALSE}
+mermaidscript <- paste0(
+"graph LR
+    A(", "Preparing ", sum(the_cards$Status=='Preparing'), 
+    ") --> B{Applied ", sum(the_cards$Status=='Applied'),
+    "}
+    B --> C{Interview ", sum(the_cards$Status=='Interview'), 
+    "}
+    B --> D[Rejected ", sum(the_cards$Status=='Rejected'), 
+    "]
+    C -->|", sum(the_cards$Status=='Rejected' & !is.na(the_cards$InterviewedLast)),  
+    "| D
+    C --> E{Offer ", sum(the_cards$Status=='Offer'),
+    "}
+    C -->|", sum(the_cards$Status=='No Response' & !is.na(the_cards$InterviewedLast)), 
+    "| F[No Response ", sum(the_cards$Status=='No Response'), 
+    "]
+    B --> F
+    E --> G[Acceptance ", sum(the_cards$Status=='Acceptance'),
+    "]
+    E --> H[Declined ", sum(the_cards$Status=='Declined'),
+    "]
+  ")
+mermaid(mermaidscript)
+```
+
+
+## Weekly Applications
+
+```{r weekly apps, echo=FALSE}
+apps_by_week <- filter(the_cards, !(ApplyWeek == "")) %>% 
+  group_by(Week = ApplyWeek) %>% 
+  summarise(Apps=n()) 
+
+plot(apps_by_week, type="b", xlab="Week", ylab="Applications")
+
+kable(apps_by_week) %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+```
+
+## Time to rejection
+```{r rejection, echo=FALSE}
+
+rejects <- the_cards %>%  
+  filter(!is.na(Rejected)) %>% 
+  mutate(DaysToReject = as.numeric(Rejected-ApplyDate))
+
+data.frame(Days = unclass(summary(rejects$DaysToReject))) %>% 
+  mutate(Days = round(Days,1)) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+
+rejects %>% 
+  select(Job, Company, ApplyDate, Rejected, DaysToReject) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+
+```
+
+
+## Keywords in Job Titles
+
+```{r keywords, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Define your character vector
+text_vector <- the_cards$Job %>% str_remove_all("[:punct:]") 
+corpus <- Corpus(VectorSource(text_vector)) %>% tm_map(removeWords, stopwords("english"))
+dtm <- as.data.frame(as.matrix(DocumentTermMatrix(corpus)))
+words <- colSums(dtm)
+df <- data.frame(Word=names(dtm), Freq=words) %>% arrange(desc(Freq))
+
+wordcloud2(data=df, size=.5, color='random-light', gridSize = 50)
+
+
+# Add column names
+
+count_occurrences <- function(strings, vector) {
+  counts <- sapply(strings, function(x) sum(str_count(vector, x)))
+  data.frame(Contains = strings, Count = counts, row.names = NULL)
+}
+
+
+```
+
