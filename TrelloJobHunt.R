@@ -120,11 +120,7 @@ the_cards <- bind_cols(the_cards, FromNotes) %>%
 
 the_cards <- select(the_cards, -id) %>% 
   mutate(ApplyDate=as.Date(due),
-         ApplyWeek=ifelse(is.na(ApplyDate),
-                          "",
-                          paste0(year(ceiling_date(ApplyDate, unit = "week", 
-                                                   week_start="Sunday") - days(1)),
-                                 sprintf("%02d", epiweek(ApplyDate)))),
+         ApplyWeek=as.character(floor_date(ApplyDate, unit = "week", week_start="Sunday")),
          LinkToCompany=paste0("https://duckduckgo.com/html?q=\'",
                               URLencode(Company, TRUE),
                               " company\'")) %>% 
@@ -132,7 +128,6 @@ the_cards <- select(the_cards, -id) %>%
          LocationType=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
   filter(Status %in% c("Preparing","Applied","Interview",
                        "Rejected","No Response", "Offer", "Accepted", "Declined")) %>% 
-  group_by(ApplyDate) %>% 
   arrange(ApplyDate)
 
 the_cards %>% 
