@@ -3,8 +3,10 @@ title: "Exploring My Job Hunt"
 author: "Charley Cowens"
 date: "`r Sys.Date()`"
 output:
-  html_document: default
+  word_document: default
   pdf_document: default
+  html_document: default
+always_allow_html: true
 ---
 
 
@@ -18,11 +20,14 @@ if(!require(ggplot2)) {install.packages("ggplot2"); library(ggplot2)}
 if(!require(wordcloud2)) {install.packages("wordcloud2"); library(wordcloud2)}
 if(!require(DiagrammeR)) {install.packages("DiagrammeR"); library(DiagrammeR)}
 if(!require(ggplot2)) {install.packages("ggplot2"); library(ggplot2)}
-   
+if(!require(webshot)) {install.packages("webshot"); library(webshot)}
 ```
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+install_phantomjs(force=TRUE)
 the_cards <- readRDS("the_cards.rds") %>% 
   filter(ApplyDate>as.Date("2023-12-31") | Status == "Preparing")
 ```
@@ -82,10 +87,20 @@ mermaid(mermaidscript)
 ```{r weekly apps, echo=FALSE}
 
 apps_by_week <- filter(the_cards, !(ApplyWeek == "")) %>% 
-  group_by(`Week Of` = ApplyWeek) %>% 
+  group_by(`Week Starting` = ApplyWeek) %>% 
   summarise(Apps=n()) 
 
-ggplot(apps_by_week, aes(x = `Week Of`, y = Apps)) +
+ggplot(apps_by_week, aes(x=`Week Starting`, y=Apps)) + 
+  theme_bw() +
+  geom_point(size=5, color="green") + 
+  geom_segment(aes(x=`Week Starting`, 
+                   xend=`Week Starting`, 
+                   y=0, 
+                   yend=Apps)) + 
+  labs(title="Application by Week" ) + 
+  theme(axis.text.x = element_text(angle=65, hjust=1, margin=margin(3, 0, 0, 0, "pt")))
+
+ggplot(apps_by_week, aes(x = `Week Starting`, y = Apps)) +
   theme_minimal() +
   geom_col() +
   coord_flip()
