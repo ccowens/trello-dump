@@ -125,7 +125,7 @@ the_cards <- select(the_cards, -id) %>%
                               URLencode(Company, TRUE),
                               " company\'")) %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
-         LocationType=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
+         WorkModel=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
   filter(Status %in% c("Preparing","Applied","Interview",
                        "Rejected","No Response", "Offer", "Accepted", "Declined")) %>% 
   arrange(ApplyDate)
