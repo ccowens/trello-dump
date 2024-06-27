@@ -14,7 +14,6 @@ params:
 
 ```{r packages, include=FALSE}
 if(!require(dplyr)) {install.packages("dplyr"); library(dplyr)}
-if(!require(magrittr)) {install.packages("magrittr"); library(magrittr)}
 if(!require(kableExtra)) {install.packages("kableExtra"); library(kableExtra)}
 if(!require(stringr)) {install.packages("stringr"); library(stringr)}
 if(!require(tm)) {install.packages("tm"); library(tm)}
@@ -29,7 +28,7 @@ if(!require(webshot)) {install.packages("webshot"); library(webshot)}
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-	echo = TRUE,
+	echo = FALSE,
 	message = FALSE,
 	warning = FALSE
 )
@@ -38,11 +37,13 @@ the_cards <- readRDS("the_cards.rds") %>%
   filter(ApplyDate>as.Date(params$AfterThisDate) | Status == "Preparing")
 ```
 
-## Diagrams
+> **For applications after this date: `r as.Date(params$AfterThisDate)`**
 
-### The Flow from Status to Status
+## Flow Diagrams
 
-```{r diagram1, echo=FALSE, fig.height=4, fig.width=7}
+<details closed><summary> How the flow from Trello status to status works</summary>
+
+```{r diagram1}
 mermaid("
 graph LR
     A(Preparing) -->|Sent| B{Applied}
@@ -59,10 +60,10 @@ graph LR
     style H fill:#f00
   ")
 ```
+</details>
 
-### Current Count for Each Status Bucket
-
-```{r diagram2, echo=FALSE}
+<details closed><summary>Current count for each status bucket</summary>
+```{r diagram2}
 mermaidscript <- paste0(
 "graph LR
     A(", "Preparing ", sum(the_cards$Status=='Preparing'), 
@@ -87,10 +88,11 @@ mermaidscript <- paste0(
   ")
 mermaid(mermaidscript)
 ```
+</details>
 
 ## Weekly Applications
 
-```{r weekly apps, echo=FALSE}
+```{r weekly apps}
 
 apps_by_week <- filter(the_cards, !(ApplyWeek == "")) %>% 
   group_by(`Week Starting` = ApplyWeek) %>% 
@@ -110,8 +112,8 @@ ggplot(apps_by_week, aes(x=`Week Starting`, y=Apps)) +
 ```
 
 ## Days to Apply from Creating Trello Ticket
-```{r rapply, echo=FALSE}
 
+```{r daysapply}
 applications <- the_cards %>%  
   filter(!Status=="Preparing") %>% 
   mutate(DaysToApply = as.numeric(ApplyDate-CardCreated))
@@ -120,19 +122,23 @@ data.frame(Days = unclass(summary(applications$DaysToApply))) %>%
   mutate(Days = round(Days,1)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
+```
 
+<details closed><summary>Apps sorted by days to apply</summary>
+
+```{r daysapplytable, echo=FALSE}
 applications %>% 
   select(Job, Company, DaysToApply) %>%
   arrange(DaysToApply) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
-
 ```
+
+</details>
 
 ## Days to Explicit Rejection
 
-```{r rejection, echo=FALSE}
-
+```{r rejection}
 rejects <- the_cards %>%  
   filter(!is.na(Rejected)) %>% 
   mutate(DaysToReject = as.numeric(Rejected-ApplyDate))
@@ -141,7 +147,11 @@ data.frame(Days = unclass(summary(rejects$DaysToReject))) %>%
   mutate(Days = round(Days,1)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
+```
 
+<details closed><summary>Apps sorted by days to explicit rejection</summary>
+
+```{r rejectiontable}
 rejects %>% 
   select(Job, Company, DaysToReject) %>%
   arrange(DaysToReject) %>% 
@@ -149,7 +159,7 @@ rejects %>%
 row_spec(0, bold=T)
 
 ```
-
+</details>
 
 ## Keywords in Job Titles
 
