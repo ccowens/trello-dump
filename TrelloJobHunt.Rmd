@@ -7,6 +7,8 @@ output:
   pdf_document: default
   word_document: default
 always_allow_html: true
+params:
+  AfterThisDate: "2023-12-31"
 ---
 
 
@@ -26,10 +28,14 @@ if(!require(webshot)) {install.packages("webshot"); library(webshot)}
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-install_phantomjs(force=TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+if(!is_phantomjs_installed()) install_phantomjs(force=TRUE)
 the_cards <- readRDS("the_cards.rds") %>% 
-  filter(ApplyDate>as.Date("2023-12-31") | Status == "Preparing")
+  filter(ApplyDate>as.Date(params$AfterThisDate) | Status == "Preparing")
 ```
 
 ## Diagrams
@@ -92,18 +98,14 @@ apps_by_week <- filter(the_cards, !(ApplyWeek == "")) %>%
 
 ggplot(apps_by_week, aes(x=`Week Starting`, y=Apps)) + 
   theme_bw() +
-  geom_point(size=5, color="green") + 
   geom_segment(aes(x=`Week Starting`, 
                    xend=`Week Starting`, 
                    y=0, 
                    yend=Apps)) + 
-  labs(title="Application by Week" ) + 
-  theme(axis.text.x = element_text(angle=65, hjust=1, margin=margin(3, 0, 0, 0, "pt")))
-
-ggplot(apps_by_week, aes(x = `Week Starting`, y = Apps)) +
-  theme_minimal() +
-  geom_col() +
-  coord_flip()
+  geom_point(size=4, color="green") + 
+  labs(title="Applications by Week" ) + 
+  theme(axis.text.x = element_text(angle=65, hjust=1, margin=margin(3, 0, 0, 0, "pt")))+
+  scale_y_continuous(breaks = seq(0, max(apps_by_week$Apps), by = 2))
 
 ```
 
