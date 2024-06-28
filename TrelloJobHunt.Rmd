@@ -32,12 +32,21 @@ knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE
 )
+
+make_stats_table <- function(use_this, my_col_name) {
+  data.frame(x = unclass(summary(use_this))) %>% 
+  mutate(x = round(x, 1)) %>% 
+  rename(!!my_col_name := 1) %>% 
+  kable() %>% kable_styling("bordered", position="left", full_width = FALSE) %>% 
+  row_spec(0, bold=T)  
+}
+
 if(!is_phantomjs_installed()) install_phantomjs(force=TRUE)
 the_cards <- readRDS("the_cards.rds") %>% 
   filter(ApplyDate>as.Date(params$AfterThisDate) | Status == "Preparing")
 ```
 
-> **For applications after this date: `r as.Date(params$AfterThisDate)`**
+> **`r nrow(filter(the_cards, Status != "Preparing"))` applications after this date: `r as.Date(params$AfterThisDate)`**
 
 ## Flow Diagrams
 
@@ -98,6 +107,8 @@ apps_by_week <- filter(the_cards, !(ApplyWeek == "")) %>%
   group_by(`Week Starting` = ApplyWeek) %>% 
   summarise(Apps=n()) 
 
+make_stats_table(apps_by_week$Apps, "Apps per week")
+
 ggplot(apps_by_week, aes(x=`Week Starting`, y=Apps)) + 
   theme_bw() +
   geom_segment(aes(x=`Week Starting`, 
@@ -118,10 +129,8 @@ applications <- the_cards %>%
   filter(!Status=="Preparing") %>% 
   mutate(DaysToApply = as.numeric(ApplyDate-CardCreated))
 
-data.frame(Days = unclass(summary(applications$DaysToApply))) %>% 
-  mutate(Days = round(Days,1)) %>% 
-  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
-row_spec(0, bold=T)
+make_stats_table(applications$DaysToApply, "Days")
+
 ```
 
 <details closed><summary>Apps sorted by days to apply</summary>
@@ -143,10 +152,8 @@ rejects <- the_cards %>%
   filter(!is.na(Rejected)) %>% 
   mutate(DaysToReject = as.numeric(Rejected-ApplyDate))
 
-data.frame(Days = unclass(summary(rejects$DaysToReject))) %>% 
-  mutate(Days = round(Days,1)) %>% 
-  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
-row_spec(0, bold=T)
+make_stats_table(rejects$DaysToReject, "Days")
+
 ```
 
 <details closed><summary>Apps sorted by days to explicit rejection</summary>
