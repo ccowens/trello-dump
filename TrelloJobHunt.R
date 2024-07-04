@@ -118,14 +118,14 @@ the_cards <- bind_cols(the_cards, FromNotes) %>%
 
 # Clean up, sort, and save as Excel ---------------------------------------
 
-the_cards <- select(the_cards, -id) %>% 
+the_cards <- the_cards %>% 
   mutate(ApplyDate=as.Date(due),
          ApplyWeek=as.character(floor_date(ApplyDate, unit = "week", week_start="Sunday")),
          LinkToCompany=paste0("https://duckduckgo.com/html?q=\'",
                               URLencode(Company, TRUE),
                               " company\'")) %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
-         WorkModel=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated) %>%
+         WorkModel=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated, TrelloCardID = id) %>%
   filter(Status %in% c("Preparing","Applied","Interview",
                        "Rejected","No Response", "Offer", "Accepted", "Declined")) %>% 
   arrange(ApplyDate)
