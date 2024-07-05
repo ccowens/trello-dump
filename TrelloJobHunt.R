@@ -6,8 +6,7 @@ if(!require(stringr)) {install.packages("stringr"); library(stringr)}
 if(!require(tidyr)) {install.packages("tidyr"); library(tidyr)}
 if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
 if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
-# At the end of this script there's a commented out list of packages and the
-# imported functions from them used
+if(!require(readr)) {install.packages("readr"); library(readr)}
 
 # Set up the Trello API connection and get the id for the board -----------
 
@@ -139,39 +138,6 @@ the_cards %>%
 
 # Save the_cards as an RDS file for use in further processing -------------
 saveRDS(the_cards, "the_cards.rds")
+write_csv(the_cards, "the_cards.csv")
 
-
-# Packages and the functions used in the script imported from them --------
-
-# Using NCmisc::list.functions.in.file()
-
-# $`c("package:dplyr", "package:stats")`
-# [1] "filter"
-# 
-# $`package:dplyr`
-# [1] "arrange"   "bind_cols" "group_by"  "left_join" "mutate"    "pull"     
-# [7] "rename"    "select"   
-# 
-# $`package:lubridate`
-# [1] "ceiling_date" "days"         "epiweek"      "year"        
-# 
-# $`package:purrr`
-# [1] "list_c" "map_if"
-# 
-# $`package:stringr`
-# [1] "str_extract"    "str_flatten"    "str_remove"     "str_remove_all"
-# [5] "str_replace"    "str_split"      "str_split_i"   
-# 
-# $`package:tidyr`
-# [1] "separate"
-# 
-# $`package:trelloR`
-# [1] "get_board_cards"  "get_board_labels" "get_board_lists" 
-# [4] "get_my_boards"    "get_token"       
-# 
-# $`package:utils`
-# [1] "install.packages"
-# 
-# $`package:writexl`
-# [1] "write_xlsx"   "xl_hyperlink"
 
