@@ -2,10 +2,9 @@
 
 This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://github.com/jchrom/trelloR) package to get useful information out of a Trello board and then collect it together in a table-like format. In this case, it's a board I use for job hunting. The script creates two files:
 
--   An Excel file
--   An R RDS file
-
-The Excel file can be used as a convenient activity overview or for further graphic or data processing. Likewise, the RDS file is an R-specific format that can be used for further processing in R. I use **TrelloJobHunt.Rmd**. 
+-   An Excel XLSX file that can be used as a convenient activity overview or for further graphic or data processing 
+-   An RDS file (an R-specific format) that can be used for further processing in R. In this project, I use **TrelloJobHunt.Rmd**
+-   A CSV file that can be imported into an application that uses CSV for importing (like Salesforce or HubSpot) 
 
 ```mermaid
 graph 
@@ -15,9 +14,11 @@ graph
     W --> A
     A[[TrelloJobHunt.R]] --> B[(XLSX file)]
     A --> C[(RDS file)]
-    B --> D[Excel...or GoogleSheets...or]
+    A --> G[(CSV file)]
+    B --> D[Excel, GoogleSheets, etc.]
     C --> E[[TrelloJobHunt.Rmd]]
     C --> F[[Some other R script]]
+    G --> H[Salesforce, HubSpot, etc.]
    
 ```
 
@@ -26,7 +27,7 @@ graph
 
 Here's how I use some of the Trello features for job hunting and how they are mapped by the script.
 
--   Each Trello card represents a single job opportunity
+-   Each Trello card represents a single job opportunity with a unique *Trello card ID*
 
 -   The Trello **title** is parsed as (*company*) *job* into these separate fields
 
@@ -64,7 +65,7 @@ graph LR
     style H fill:#f00
 ```
 
--   The Trello **label** is used to represent the *location type* for the job:
+-   The Trello **label** is used to represent the *work model* for the job:
 
     -   On-site
 
@@ -88,7 +89,7 @@ graph LR
 
 -   The remaining lines in the Trello **description** field are saved as an *other notes* field
 
--   The Trello **card ID** is used to construct the *created date* for the card
+-   The Trello **card ID** is used to reconstruct the *created date* for the card
 
 ## Additional generated fields
 
