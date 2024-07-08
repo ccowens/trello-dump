@@ -72,12 +72,13 @@ the_cards <- the_cards %>%
 
 # Add card created date ---------------------------------------------------
 
-# Use the trick that the first 8 characters of the card id are a timestamp 
-# as a hex number of when the card was created
-
+# Use the fact that the first 8 characters of the card id are a timestamp 
+# as a hex number of when the card was created in GMT. It will have to be converted 
+# to the local time zone that all the other date / time values are in.
+# Link: https://support.atlassian.com/trello/docs/getting-the-time-a-card-or-board-was-created/
 the_cards <- the_cards %>% 
   mutate(timestamp = strtoi(substring(id, 1, 8), base=16)) %>% 
-  mutate(CardCreated = as.Date(as.POSIXct(timestamp, origin = "1970-01-01"))) %>% 
+  mutate(CardCreated = as.Date(format(with_tz(as.POSIXct(timestamp, origin = "1970-01-01"),tz=Sys.timezone())))) %>% 
   select(-timestamp)
 
 
