@@ -22,6 +22,7 @@ if(!require(wordcloud2)) {install.packages("wordcloud2"); library(wordcloud2)}
 if(!require(DiagrammeR)) {install.packages("DiagrammeR"); library(DiagrammeR)}
 if(!require(ggplot2)) {install.packages("ggplot2"); library(ggplot2)}
 if(!require(webshot)) {install.packages("webshot"); library(webshot)}
+if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
 ```
 
 
@@ -131,6 +132,9 @@ applications <- the_cards %>%
 
 make_stats_table(applications$DaysToApply, "Days")
 
+ggplot(applications, aes(DaysToApply)) + 
+  theme_light() +
+  geom_bar(fill="green")
 ```
 
 <details closed><summary>Apps sorted by days to apply</summary>
@@ -139,6 +143,34 @@ make_stats_table(applications$DaysToApply, "Days")
 applications %>% 
   select(Job, Company, DaysToApply) %>%
   arrange(DaysToApply) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+```
+
+</details>
+
+## Age of Pending Applications
+
+How many days have active unresolved applications been awaiting a response? Those that are too old will have been moved to the "No Response" status. 
+
+```{r dayspending}
+pending <- the_cards %>%  
+  filter(Status =="Applied") %>% 
+  mutate(DaysPending = as.numeric(today()-ApplyDate))
+
+make_stats_table(pending$DaysPending, "Days")
+
+ggplot(pending, aes(DaysPending)) + 
+  theme_light() +
+  geom_bar(fill="yellow")
+```
+
+<details closed><summary>Apps sorted by how many days unresolved since application</summary>
+
+```{r dayspendingtable, echo=FALSE}
+pending %>% 
+  select(Job, Company, DaysPending) %>%
+  arrange(DaysPending) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
 ```
@@ -154,11 +186,17 @@ rejects <- the_cards %>%
 
 make_stats_table(rejects$DaysToReject, "Days")
 
+ggplot(rejects, aes(DaysToReject)) + 
+  theme_light() +
+  geom_bar(fill="red")
+
+
 ```
 
 <details closed><summary>Apps sorted by days to explicit rejection</summary>
 
 ```{r rejectiontable}
+
 rejects %>% 
   select(Job, Company, DaysToReject) %>%
   arrange(DaysToReject) %>% 
@@ -168,9 +206,23 @@ row_spec(0, bold=T)
 ```
 </details>
 
-## Keywords in Job Titles
+## Job Titles
 
-```{r keywords, echo=FALSE, message=FALSE, warning=FALSE}
+### Titles
+
+```{r titlestable}
+the_cards %>% 
+  group_by(`Job Title`=Job) %>%
+  summarise(Count=n()) %>% 
+  arrange(desc(Count)) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+
+```
+
+### Keywords
+
+```{r keywords}
 
 # Define your character vector
 text_vector <- the_cards$Job %>% str_remove_all("[:punct:]") 
@@ -192,3 +244,16 @@ count_occurrences <- function(strings, vector) {
 
 ```
 
+## Locations
+
+These are locations for the company office I would be associated with.
+
+```{r locationstable}
+the_cards %>% 
+  group_by(Location) %>%
+  summarise(Count=n()) %>% 
+  arrange(desc(Count)) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+
+```
