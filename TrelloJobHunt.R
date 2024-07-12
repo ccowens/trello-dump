@@ -8,17 +8,29 @@ if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
 if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
 if(!require(readr)) {install.packages("readr"); library(readr)}
 
+options <- list(outputs = "all", #"all" OR "no_cvs"
+                use = "My Application Tracker" #"My Application Tracker"[your board name] OR "Sample Application Tracker"
+                ) 
+
 # Set up the Trello API connection and get the id for the board -----------
 
+if (options$use == "Sample Application Tracker") {
+  the_board <- "669186af27d6aa1627b818ae" 
+} else {
+  
 # I use a local .Renviron file in the project folder to store the key
 # and secret
+
 my_token = get_token("my-app",
                      key = Sys.getenv("MY_TRELLOAPI_KEY"), 
                      secret = Sys.getenv("MY_TRELLOAPI_SECRET"))
 
 the_board <- get_my_boards() %>% 
-  filter(name == "Application Tracker") %>% 
-  pull(id)
+  filter(name == eval(options$use)) %>% 
+  pull(id) 
+}
+
+if (length(the_board)==0) stop(paste0(eval(options$use)," not found. Spelling?"))
 
 
 # Set up lookup tables for list and label ids for the names ---------------
@@ -138,6 +150,7 @@ the_cards %>%
 
 # Save the_cards as an RDS file for use in further processing -------------
 saveRDS(the_cards, "the_cards.rds")
-write_csv(the_cards, "the_cards.csv")
+
+if(options$outputs=="all") write_csv(the_cards, "the_cards.csv")
 
 
