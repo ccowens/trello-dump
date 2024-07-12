@@ -125,9 +125,8 @@ the_cards <- the_cards %>%
                               URLencode(Company, TRUE),
                               " company\'")) %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
-         WorkModel=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, InterviewedLast, Rejected, OtherNotes, CardCreated, TrelloCardID = id) %>%
-  filter(Status %in% c("Preparing","Applied","Interview",
-                       "Rejected","No Response", "Offer", "Accepted", "Declined")) %>% 
+         WorkModel=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, 
+         InterviewedLast, Rejected, OtherNotes, CardCreated, TrelloCardID = id) %>%
   arrange(ApplyDate)
 
 the_cards %>% 
