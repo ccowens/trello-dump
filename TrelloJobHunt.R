@@ -8,29 +8,32 @@ if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
 if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
 if(!require(readr)) {install.packages("readr"); library(readr)}
 
-options <- list(outputs = "all", #"all" OR "no_cvs"
-                use = "My Application Tracker" #"My Application Tracker"[your board name] OR "Sample Application Tracker"
+options <- list(board_to_use = "Sample Application Tracker" 
+                # "Sample Application Tracker"  OR 
+                # "My Application Tracker"[can be your board name]
                 ) 
 
-# Set up the Trello API connection and get the id for the board -----------
+# Get the id for the board to use -----------------------------------------
 
-if (options$use == "Sample Application Tracker") {
+if (options$board_to_use == "Sample Application Tracker") {
+  # for a public board like the sample board you just need the board id
   the_board <- "669186af27d6aa1627b818ae" 
 } else {
   
 # I use a local .Renviron file in the project folder to store the key
-# and secret
+# and secret for using my actual private board for job hunting
 
-my_token = get_token("my-app",
+my_token = get_token("my-app", 
                      key = Sys.getenv("MY_TRELLOAPI_KEY"), 
-                     secret = Sys.getenv("MY_TRELLOAPI_SECRET"))
+                     secret = Sys.getenv("MY_TRELLOAPI_SECRET"),
+                     expiration = "never")
 
 the_board <- get_my_boards() %>% 
-  filter(name == eval(options$use)) %>% 
+  filter(name == eval(options$board_to_use)) %>% 
   pull(id) 
 }
 
-if (length(the_board)==0) stop(paste0(eval(options$use)," not found. Spelling?"))
+if (length(the_board)==0) stop(paste0("\"", eval(options$board_to_use),"\" not found. Spelling?"))
 
 
 # Set up lookup tables for list and label ids for the names ---------------
@@ -128,7 +131,7 @@ FromNotes <- data.frame(LinkToJob, Location, InterviewedLast, Rejected)
 the_cards <- bind_cols(the_cards, FromNotes) %>% 
   select(-desc)
 
-# Clean up, sort, and save as Excel ---------------------------------------
+# Clean up and sort -------------------------------------------------------
 
 the_cards <- the_cards %>% 
   mutate(ApplyDate=as.Date(due),
@@ -141,16 +144,16 @@ the_cards <- the_cards %>%
          InterviewedLast, Rejected, OtherNotes, CardCreated, TrelloCardID = id) %>%
   arrange(ApplyDate)
 
+# Save the_cards out in various formats -------------
+
 the_cards %>% 
   mutate(
     LinkToCard = xl_hyperlink(LinkToCard,"card"), 
     LinkToJob = xl_hyperlink(LinkToJob,"listing"),
     LinkToCompany = xl_hyperlink(LinkToCompany,"company")) %>% 
-  write_xlsx("ApplicationTracker.xlsx")
-
-# Save the_cards as an RDS file for use in further processing -------------
-saveRDS(the_cards, "the_cards.rds")
-
-if(options$outputs=="all") write_csv(the_cards, "the_cards.csv")
+  write_xlsx(paste0(options$board_to_use,".xlsx"))
+saveRDS(the_cards, paste0(options$board_to_use,".rds"))
+write_csv(the_cards,paste0(options$board_to_use,".csv"))
+data.frame(Columns = colnames(the_cards), Types = sapply(the_cards, class)) %>% write_csv(paste0(options$board_to_use,"_coltypes.csv"))
 
 
