@@ -9,6 +9,7 @@ output:
 always_allow_html: true
 params:
   AfterThisDate: "2023-12-31"
+  BoardToUse: "My Application Tracker"
 ---
 
 
@@ -43,7 +44,7 @@ make_stats_table <- function(use_this, my_col_name) {
 }
 
 if(!is_phantomjs_installed()) install_phantomjs(force=TRUE)
-the_cards <- readRDS("the_cards.rds") %>% 
+the_cards <- readRDS(paste0(params$BoardToUse,".rds")) %>% 
   filter(ApplyDate>as.Date(params$AfterThisDate) | Status == "Preparing")
 ```
 
