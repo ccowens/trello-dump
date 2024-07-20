@@ -1,14 +1,14 @@
 if(!require(trelloR)) {install.packages("trelloR"); library(trelloR)}
 if(!require(purrr)) {install.packages("purrr"); library(purrr)}
 if(!require(dplyr)) {install.packages("dplyr"); library(dplyr)}
-if(!require(writexl)) {install.packages("writexl"); library(writexl)}
 if(!require(stringr)) {install.packages("stringr"); library(stringr)}
 if(!require(tidyr)) {install.packages("tidyr"); library(tidyr)}
 if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
 if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
 if(!require(readr)) {install.packages("readr"); library(readr)}
+if(!require(openxlsx)) {install.packages("openxlsx"); library(openxlsx)}
 
-options <- list(board_to_use = "Sample Application Tracker" 
+options <- list(board_to_use = "My Application Tracker" 
                 # "Sample Application Tracker"  OR 
                 # "My Application Tracker"[can be your board name]
                 ) 
@@ -144,16 +144,71 @@ the_cards <- the_cards %>%
          InterviewedLast, Rejected, OtherNotes, CardCreated, TrelloCardID = id) %>%
   arrange(ApplyDate)
 
-# Save the_cards out in various formats -------------
+# Save the_cards out as an Excel file -------------
 
-the_cards %>% 
+# create a data frame version of "the_cards" with link columns set to 
+# appropriate Excel formula text
+
+df <- the_cards %>%
   mutate(
-    LinkToCard = xl_hyperlink(LinkToCard,"card"), 
-    LinkToJob = xl_hyperlink(LinkToJob,"listing"),
-    LinkToCompany = xl_hyperlink(LinkToCompany,"company")) %>% 
-  write_xlsx(paste0(options$board_to_use,".xlsx"))
+    LinkToCard = paste0("=HYPERLINK(\"", LinkToCard, "\", \"card\")"),
+    LinkToJob = paste0("=HYPERLINK(\"", LinkToJob, "\", \"listing\")"),
+    LinkToCompany = paste0("=HYPERLINK(\"", LinkToCompany, "\", \"company\")")
+  )
+
+# create a workbook in memory from this data frame
+
+header_style <- createStyle(textDecoration = "bold", halign = "center")
+
+ws <- "Tracker"
+wb <- createWorkbook()
+addWorksheet(wb, ws)
+writeData(wb,ws, df, headerStyle = header_style)
+freezePane(wb, ws, firstRow = TRUE)
+
+# the links into the workbook
+
+writeFormula(wb, ws, startRow = 2, startCol = 7,
+             x = df$LinkToCard
+)
+writeFormula(wb, ws, startRow = 2, startCol = 8,
+             x = df$LinkToJob
+)
+writeFormula(wb, ws, startRow = 2, startCol = 9,
+             x = df$LinkToCompany
+)
+
+# set up conditional formatting for the Status column
+
+conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df), type="expression",
+                      rule='="Rejected"', style=createStyle(bgFill="red"))
+conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df), type="expression",
+                      rule='="No Response"', style=createStyle(bgFill="orange"))
+conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df), type="expression",
+                      rule='="Applied"', style=createStyle(bgFill="yellow"))
+conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df), type="expression",
+                      rule='="Interview"', style=createStyle(bgFill="cyan"))
+conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df), type="expression",
+                      rule='="Offer"', style=createStyle(bgFill="green"))
+conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df), type="expression",
+                      rule='="Declined"', style=createStyle(bgFill="gray"))
+conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df), type="expression",
+                      rule='="Accepted"', style=createStyle(fontColour="white", bgFill="black"))
+
+# default the column width to auto and then make adjustments
+
+setColWidths(wb, ws, cols=1:ncol(df), widths="auto")
+setColWidths(wb, ws, cols=13, widths=15)
+setColWidths(wb, ws, cols=c(3:6,12,14), widths=12)
+
+# done
+saveWorkbook(wb, paste0(options$board_to_use,".xlsx"), overwrite=TRUE)
+
+# Save the_cards out in other formats -------------
+
 saveRDS(the_cards, paste0(options$board_to_use,".rds"))
 write_csv(the_cards,paste0(options$board_to_use,".csv"))
+# create a reference CSV listing the column types for the main CSV
 data.frame(Columns = colnames(the_cards), Types = sapply(the_cards, class)) %>% write_csv(paste0(options$board_to_use,"_coltypes.csv"))
 
 
