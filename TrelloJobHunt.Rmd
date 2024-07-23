@@ -138,7 +138,7 @@ ggplot(applications, aes(DaysToApply)) +
   geom_bar(fill="green")
 ```
 
-<details closed><summary>Apps sorted by days to apply</summary>
+<details closed><summary>**Apps sorted by days to apply**</summary>
 
 ```{r daysapplytable, echo=FALSE}
 applications %>% 
@@ -166,12 +166,12 @@ ggplot(pending, aes(DaysPending)) +
   geom_bar(fill="yellow")
 ```
 
-<details closed><summary>Apps sorted by how many days unresolved since application</summary>
+<details closed><summary>**Apps sorted by how many days unresolved since application (descending)**</summary>
 
 ```{r dayspendingtable, echo=FALSE}
 pending %>% 
   select(Job, Company, DaysPending) %>%
-  arrange(DaysPending) %>% 
+  arrange(desc(DaysPending)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
 ```
@@ -194,13 +194,13 @@ ggplot(rejects, aes(DaysToReject)) +
 
 ```
 
-<details closed><summary>Apps sorted by days to explicit rejection</summary>
+<details closed><summary>**Apps sorted by days to explicit rejection (descending)**</summary>
 
 ```{r rejectiontable}
 
 rejects %>% 
   select(Job, Company, DaysToReject) %>%
-  arrange(DaysToReject) %>% 
+  arrange(desc(DaysToReject)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
 
@@ -211,11 +211,26 @@ row_spec(0, bold=T)
 
 ### Titles
 
+#### Top 5
+
 ```{r titlestable}
-the_cards %>% 
+df <- the_cards %>% 
   group_by(`Job Title`=Job) %>%
   summarise(Count=n()) %>% 
-  arrange(desc(Count)) %>% 
+  arrange(desc(Count))
+
+df %>%
+  head(5) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+
+```
+
+<details closed><summary>**Other titles in descending order**</summary>
+
+```{r titlestable2}
+df %>%
+  tail(-5) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
 
@@ -233,15 +248,6 @@ words <- colSums(dtm)
 df <- data.frame(Word=names(dtm), Freq=words) %>% arrange(desc(Freq))
 
 wordcloud2(data=df, size=.5, color='random-light', gridSize = 50)
-
-
-# Add column names
-
-count_occurrences <- function(strings, vector) {
-  counts <- sapply(strings, function(x) sum(str_count(vector, x)))
-  data.frame(Contains = strings, Count = counts, row.names = NULL)
-}
-
 
 ```
 
