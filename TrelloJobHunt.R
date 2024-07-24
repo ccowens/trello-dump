@@ -180,19 +180,19 @@ writeFormula(wb, ws, startRow = 2, startCol = 9,
 
 # set up conditional formatting for the Status column
 
-conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df)+1, type="expression",
+conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="Rejected"', style=createStyle(bgFill="red"))
-conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df)+1, type="expression",
+conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="No Response"', style=createStyle(bgFill="orange"))
-conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df)+1, type="expression",
+conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="Applied"', style=createStyle(bgFill="yellow"))
-conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df)+1, type="expression",
+conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="Interview"', style=createStyle(bgFill="cyan"))
-conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df)+1, type="expression",
+conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="Offer"', style=createStyle(bgFill="green"))
-conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df)+1, type="expression",
+conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="Declined"', style=createStyle(bgFill="gray"))
-conditionalFormatting(wb, ws, cols=5, rows=2:nrow(df)+1, type="expression",
+conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="Accepted"', style=createStyle(fontColour="white", bgFill="black"))
 
 # default the column width to auto and then make adjustments
