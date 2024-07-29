@@ -48,7 +48,7 @@ the_cards <- readRDS(paste0(params$BoardToUse,".rds")) %>%
   filter(ApplyDate>as.Date(params$AfterThisDate) | Status == "Preparing")
 ```
 
-> **`r nrow(filter(the_cards, Status != "Preparing"))` applications after this date: `r as.Date(params$AfterThisDate)`**
+> **`r nrow(filter(the_cards, Status != "Preparing"))` applications sent after this date: `r as.Date(params$AfterThisDate)`**
 
 ## Flow Diagrams
 
@@ -152,13 +152,16 @@ row_spec(0, bold=T)
 
 ## Age of Pending Applications
 
-How many days have active unresolved applications been awaiting a response? Those that are too old will have been moved to the "No Response" status. 
-
 ```{r dayspending}
 pending <- the_cards %>%  
   filter(Status =="Applied") %>% 
   mutate(DaysPending = as.numeric(today()-ApplyDate))
+```
 
+How many days have the **`r nrow(pending)`** currently unresolved applications been awaiting a response? (When a pending application has gotten "too old", it should have been moved to the "No Response" status.)
+
+
+```{r dayspendingpresentation}
 make_stats_table(pending$DaysPending, "Days")
 
 ggplot(pending, aes(DaysPending)) + 
@@ -184,7 +187,11 @@ row_spec(0, bold=T)
 rejects <- the_cards %>%  
   filter(!is.na(Rejected)) %>% 
   mutate(DaysToReject = as.numeric(Rejected-ApplyDate))
+```
 
+For the `r nrow(rejects)` explicit rejections so far, how many days after application was the email received?
+
+```{r rejectionpresentation}
 make_stats_table(rejects$DaysToReject, "Days")
 
 ggplot(rejects, aes(DaysToReject)) + 

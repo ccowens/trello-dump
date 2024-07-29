@@ -8,7 +8,7 @@ if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
 if(!require(readr)) {install.packages("readr"); library(readr)}
 if(!require(openxlsx)) {install.packages("openxlsx"); library(openxlsx)}
 
-options <- list(board_to_use = "My Application Tracker" 
+options <- list(board_to_use = "Sample Application Tracker" 
                 # "Sample Application Tracker"  OR 
                 # "My Application Tracker"[can be your board name]
                 ) 
