@@ -8,7 +8,7 @@ if(!require(httpuv)) {install.packages("httpuv"); library(httpuv)}
 if(!require(readr)) {install.packages("readr"); library(readr)}
 if(!require(openxlsx)) {install.packages("openxlsx"); library(openxlsx)}
 
-options <- list(board_to_use = "Sample Application Tracker" 
+options <- list(board_to_use = "My Application Tracker" 
                 # "Sample Application Tracker"  OR 
                 # "My Application Tracker"[can be your board name]
                 ) 
@@ -49,7 +49,7 @@ the_label_ids <- get_board_labels(the_board) %>%
 
 # Grab the cards ----------------------------------------------------------
 
-the_cards <- get_board_cards(the_board) %>% 
+the_cards <- get_board_cards(the_board, limit = Inf) %>% 
   select(id,idList,idLabels,name,due,shortUrl,desc)
 
 # Figure out the labels for each card -------------------------------------
@@ -131,6 +131,20 @@ FromNotes <- data.frame(LinkToJob, Location, InterviewedLast, Rejected)
 the_cards <- bind_cols(the_cards, FromNotes) %>% 
   select(-desc)
 
+
+# Further parse the location ----------------------------------------------
+
+the_cards <- the_cards %>% 
+  # If no state assume California and add it in with comma
+  mutate(Location = ifelse(str_detect(Location, ", "), Location, paste0(Location, ", CA"))) %>% 
+  # Grab the location up to a comma as a city
+  mutate(City = str_extract(Location, ".*(?=, )")) %>% 
+  # Treat the rest as region: either state in US or country 
+  mutate(Region = str_extract(Location, paste0("(?<=", ", ", ").*"))) %>%
+  # If "region" is two letters assume a state and US as country, otherwise just country 
+  mutate(State = ifelse(str_length(Region) == 2, Region, "")) %>% 
+  mutate(Country = ifelse(str_length(Region) > 2, Region, "US")) 
+
 # Clean up and sort -------------------------------------------------------
 
 the_cards <- the_cards %>% 
@@ -140,8 +154,9 @@ the_cards <- the_cards %>%
                               URLencode(Company, TRUE),
                               " company\'")) %>% 
   select(Job, Company, ApplyDate, ApplyWeek, Status=list, 
-         WorkModel=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany, Location, 
-         InterviewedLast, Rejected, OtherNotes, CardCreated, TrelloCardID = id) %>%
+         WorkModel=label, LinkToCard=shortUrl, LinkToJob, LinkToCompany,  
+         City, State, Country, InterviewedLast, Rejected, OtherNotes, CardCreated, 
+         TrelloCardID = id) %>%
   arrange(ApplyDate)
 
 # Save the_cards out as an Excel file -------------
