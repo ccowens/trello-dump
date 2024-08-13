@@ -210,6 +210,13 @@ conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
 conditionalFormatting(wb, ws, cols=5, rows=2:(nrow(df)+1), type="expression",
                       rule='="Accepted"', style=createStyle(fontColour="white", bgFill="black"))
 
+# set up conditional formatting for the WorkModel column
+
+conditionalFormatting(wb, ws, cols=6, rows=2:nrow(df), type="expression",
+                      rule='="Onsite"', style=createStyle(textDecoration="bold"))
+conditionalFormatting(wb, ws, cols=6, rows=2:nrow(df), type="expression",
+                      rule='="Remote"', style=createStyle(textDecoration="italic"))
+
 # default the column width to auto and then make adjustments
 
 setColWidths(wb, ws, cols=1:ncol(df), widths="auto")
