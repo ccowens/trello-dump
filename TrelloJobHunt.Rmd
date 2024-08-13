@@ -264,10 +264,26 @@ These are locations for the company office I would be associated with.
 
 ```{r locationstable}
 the_cards %>% 
-  group_by(Location) %>%
+  group_by(City) %>%
   summarise(Count=n()) %>% 
   arrange(desc(Count)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
+
+the_cards %>% 
+  filter(Country=="US") %>% 
+  group_by(State) %>%
+  summarise(Count=n()) %>% 
+  arrange(desc(Count)) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+
+the_cards %>% 
+  group_by(Country) %>%
+  summarise(Count=n()) %>% 
+  arrange(desc(Count)) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
+
 
 ```
