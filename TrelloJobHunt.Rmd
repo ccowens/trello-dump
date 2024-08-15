@@ -268,7 +268,7 @@ These are locations for the company office I would be associated with.
 
 ```{r locationstable}
 the_cards %>% 
-  group_by(City) %>%
+  group_by(Country, State, City) %>%
   summarise(Count=n()) %>% 
   arrange(desc(Count)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
@@ -290,4 +290,18 @@ the_cards %>%
 row_spec(0, bold=T)
 
 
+```
+
+## More Than One App at a Company
+
+These are companies I've applied at more than once.
+
+```{r morethanoneapp}
+the_cards %>% 
+  group_by(Company) %>% 
+  summarise(Applications = n()) %>% 
+  arrange(desc(Applications)) %>% 
+  filter(Applications > 1) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+row_spec(0, bold=T)
 ```
