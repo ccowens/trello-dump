@@ -3,9 +3,9 @@ title: "Exploring My Job Hunt"
 author: "Charley Cowens"
 date: "`r Sys.Date()`"
 output:
-  pdf_document:
-      toc: true
   html_document: 
+      toc: true
+  pdf_document:
       toc: true
   word_document: default
 always_allow_html: true
@@ -268,31 +268,42 @@ wordcloud2(data=df, size=.5, color='random-light', gridSize = 50)
 
 These are locations for the company office I would be associated with.
 
-```{r locationstable}
+<details closed><summary>**City locations sorted by number of apps (descending)**</summary>
+
+```{r locationsbycity}
 the_cards %>% 
-  group_by(Country, State, City) %>%
-  summarise(Count=n()) %>% 
+  group_by(City, State, Country) %>%
+  summarise(Count=n(), Percentage = paste0(round(Count/nrow(.) * 100), "%")) %>% 
   arrange(desc(Count)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
+```
+</details>
 
+<details closed><summary>**US state locations sorted by number of apps (descending)**</summary>
+```{r locationsbystate}
 the_cards %>% 
   filter(Country=="US") %>% 
   group_by(State) %>%
-  summarise(Count=n()) %>% 
+  summarise(Count=n(), Percentage = paste0(round(Count/nrow(.) * 100), "%")) %>% 
   arrange(desc(Count)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
+```
+</details>
 
+<details closed><summary>**Country locations sorted by number of apps (descending)**</summary>
+```{r locationsbycountry}
 the_cards %>% 
   group_by(Country) %>%
-  summarise(Count=n()) %>% 
+  summarise(Count=n(), Percentage = paste0(round(Count/nrow(.) * 100), "%")) %>% 
   arrange(desc(Count)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
 
 
 ```
+</details>
 
 ## More Than One App at a Company
 
