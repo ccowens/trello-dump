@@ -27,6 +27,7 @@ if(!require(DiagrammeR)) {install.packages("DiagrammeR"); library(DiagrammeR)}
 if(!require(ggplot2)) {install.packages("ggplot2"); library(ggplot2)}
 if(!require(webshot)) {install.packages("webshot"); library(webshot)}
 if(!require(lubridate)) {install.packages("lubridate"); library(lubridate)}
+if(!require(maps)) {install.packages("maps"); library(maps)}
 ```
 
 
@@ -289,6 +290,26 @@ the_cards %>%
   arrange(desc(Count)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
+
+abbreviations <- state.fips %>% select(abb,polyname) %>% 
+  mutate(polyname = ifelse(str_detect(polyname,":"),str_extract(polyname,"^.*(?=:)"),polyname)) %>% 
+  distinct()
+
+state_counts <- the_cards %>% 
+  filter(Country=="US") %>% 
+  group_by(State) %>%
+  summarise(Count=n()) %>% 
+  left_join(abbreviations, by=c("State" = "abb")) 
+
+map_data_for_states <- map_data("state") %>%
+  left_join(state_counts, by = c("region" = "polyname"))
+
+ggplot(map_data_for_states, aes(x = long, y = lat, group = group, fill = Count)) +
+  geom_polygon(color = "white") +
+  scale_fill_gradient(low = "#ccccff", high = "#0000ff", na.value = "grey50") +
+  theme_void() +
+  labs(title = "US Map with Color Shading Based on Applications by State",
+       fill = "Count")
 ```
 </details>
 
@@ -321,7 +342,7 @@ multiapps %>%
   row_spec(0, bold=T)
 ```
 
-<details><summary>Job specifics for these</summary>
+<details><summary>**Job specifics for these**</summary>
 ```{r morethanoneappdetails}
 multiapps %>% 
   left_join(the_cards) %>%
