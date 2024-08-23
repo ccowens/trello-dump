@@ -310,11 +310,24 @@ row_spec(0, bold=T)
 These are companies I've applied at more than once.
 
 ```{r morethanoneapp}
-the_cards %>% 
+multiapps <- the_cards %>% 
   group_by(Company) %>% 
   summarise(Applications = n()) %>% 
   arrange(desc(Applications)) %>% 
-  filter(Applications > 1) %>% 
+  filter(Applications > 1)
+
+multiapps %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
-row_spec(0, bold=T)
+  row_spec(0, bold=T)
 ```
+
+<details><summary>Job specifics for these</summary>
+```{r morethanoneappdetails}
+multiapps %>% 
+  left_join(the_cards) %>%
+  select(Company, Job, ApplyDate, Status) %>% 
+  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+  row_spec(0, bold=T)
+
+```
+</details>
