@@ -283,6 +283,7 @@ row_spec(0, bold=T)
 
 <details closed><summary>**US state locations sorted by number of apps (descending)**</summary>
 ```{r locationsbystate}
+
 the_cards %>% 
   filter(Country=="US") %>% 
   group_by(State) %>%
@@ -291,19 +292,24 @@ the_cards %>%
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
 
+# use the maps package to get a table that matches the 2-letter abbreviations I use to
+#   the spelled-out state names
 abbreviations <- state.fips %>% select(abb,polyname) %>% 
   mutate(polyname = ifelse(str_detect(polyname,":"),str_extract(polyname,"^.*(?=:)"),polyname)) %>% 
   distinct()
 
+# add these names to an applications-count-for-each-state dataframe
 state_counts <- the_cards %>% 
   filter(Country=="US") %>% 
   group_by(State) %>%
   summarise(Count=n()) %>% 
   left_join(abbreviations, by=c("State" = "abb")) 
 
+#associate the counts with the mapping data for states
 map_data_for_states <- map_data("state") %>%
   left_join(state_counts, by = c("region" = "polyname"))
 
+#draw the map
 ggplot(map_data_for_states, aes(x = long, y = lat, group = group, fill = Count)) +
   geom_polygon(color = "white") +
   scale_fill_gradient(low = "#ccccff", high = "#0000ff", na.value = "grey50") +
