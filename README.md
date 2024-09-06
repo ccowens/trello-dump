@@ -17,6 +17,8 @@ graph
     A --> G[(CSV file)]
     B --> D[Excel, GoogleSheets, etc.]
     C --> E[[TrelloJobHunt.Rmd]]
+    E --> J[(HTML file)]
+    E --> K[(PDF file)]
     C --> F[[Some other R script]]
     G --> H[Salesforce, HubSpot, etc.]
     G --- I[(Col types file)]
