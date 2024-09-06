@@ -183,7 +183,7 @@ pending %>%
   arrange(desc(DaysPending)) %>% 
   kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
   row_spec(0, bold=T) %>% 
-  row_spec(1:CountOfOld, color="red")
+  row_spec(1:CountOfOld, color=ifelse(CountOfOld > 0, "red", "default"))
 ```
 
 </details>
