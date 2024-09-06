@@ -1,10 +1,11 @@
 # trello-dump
 
-This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://github.com/jchrom/trelloR) package to get useful information out of a Trello board and then collect it together in a table-like format. In this case, it's a board I use for job hunting. The script creates two files:
+This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://github.com/jchrom/trelloR) package to get useful information out of a Trello board and then collect it together in a table-like format. In this case, it's a board I use for job hunting. The script creates four files:
 
 -   An Excel XLSX file that can be used as a convenient activity overview or for further graphic or data processing 
 -   An RDS file (an R-specific format) that can be used for further processing in R. In this project, I use **TrelloJobHunt.Rmd** for this
--   A CSV file that can be imported into an application that uses CSV for importing (like Salesforce or HubSpot) 
+-   A CSV file that can be imported into an application that uses CSV for importing (like Salesforce or HubSpot)
+-   A CSV that preserves metadata for this CSV file 
 
 ```mermaid
 graph 
