@@ -9,15 +9,15 @@ This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://git
 
 ```mermaid
 graph 
-    Z[Trello] --- Y(My Job Hunting Board)
+    Z[Trello] --- Y(*My Job Hunting Board*)
     Y --> X[Trello API] 
     X <--> W[trelloR package] 
     W --> A
-    A[[TrelloJobHunt.R]] --> B[(XLSX file)]
+    A[[**TrelloJobHunt.R**]] --> B[(XLSX file)]
     A --> C[(RDS file)]
     A --> G[(CSV file)]
     B --> D[Excel, GoogleSheets, etc.]
-    C --> E[[TrelloJobHunt.Rmd]]
+    C --> E[[**TrelloJobHunt.Rmd**]]
     E --> J[(HTML file)]
     E --> K[(PDF file)]
     C --> F[[Some other R script]]
