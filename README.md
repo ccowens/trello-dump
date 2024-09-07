@@ -5,11 +5,11 @@ This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://git
 -   An Excel XLSX file that can be used as a convenient activity overview or for further graphic or data processing 
 -   An RDS file (an R-specific format) that can be used for further processing in R. In this project, I use **TrelloJobHunt.Rmd** for this
 -   A CSV file that can be imported into an application that uses CSV for importing (like Salesforce or HubSpot)
--   A CSV that preserves metadata for this CSV file 
+-   A CSV file that preserves the column type info for this CSV file 
 
 ```mermaid
 graph 
-    Z[Trello] --- Y(*My Job Hunting Board*)
+    Z[Trello] o--o Y(*&nbsp;My Job Hunting Board&nbsp;*)
     Y --> X[Trello API] 
     X <--> W[trelloR package] 
     W --> A
@@ -22,7 +22,8 @@ graph
     E --> K[(PDF file)]
     C --> F[[Some other R script]]
     G --> H[Salesforce, HubSpot, etc.]
-    G --- I[(Col types file)]
+    A --> I[(Col types file for CSV)]
+    I --o H
    
 ```
 
