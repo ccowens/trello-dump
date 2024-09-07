@@ -8,23 +8,36 @@ This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://git
 -   A CSV file that preserves the column type info for this CSV file 
 
 ```mermaid
-graph 
+
+graph
     Z[Trello] o--o Y(*&nbsp;My Job Hunting Board&nbsp;*)
     Y --> X[Trello API] 
     X <--> W[trelloR package] 
-    W --> A
-    A[[**TrelloJobHunt.R**]] --> B[(XLSX file)]
-    A --> C[(RDS file)]
-    A --> G[(CSV file)]
+subgraph main
+W o--o A[[**TrelloJobHunt.R**]]
+end
+style main fill:#fff, stroke:#fff, color:#fff
+
+subgraph Use spreadsheet or upload to GoogleSheets
+    A --> B[(XLSX file)]
     B --> D[Excel, GoogleSheets, etc.]
+    end
+    
+subgraph For importing back into R for further analysis
+    A --> C[(RDS file)]
     C --> E[[**TrelloJobHunt.Rmd**]]
     E --> J[(HTML file)]
     E --> K[(PDF file)]
     C --> F[[Some other R script]]
-    G --> H[Salesforce, HubSpot, etc.]
+    end
+subgraph For importing into another application
+    A --> G[(CSV file)]
+    G --> L((*))
+    style L fill:#000
     A --> I[(Col types file for CSV)]
-    I --o H
-   
+    I -.- L
+    L --> H[Salesforce, HubSpot, etc.]
+    end
 ```
 
 
