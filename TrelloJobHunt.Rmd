@@ -179,11 +179,12 @@ ggplot(pending, aes(DaysPending)) +
 
 CountOfOld <- nrow(filter(pending, DaysPending > params$DaysToWaitForReject))
 pending %>% 
+  mutate(Job = cell_spec(Job, "html", link=LinkToCard)) %>% 
   select(Job, Company, DaysPending) %>%
   arrange(desc(DaysPending)) %>% 
-  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+  kable(escape=FALSE, format="html") %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
   row_spec(0, bold=T) %>% 
-  row_spec(1:CountOfOld, color=ifelse(CountOfOld > 0, "red", "default"))
+  row_spec(1:CountOfOld, background=ifelse(CountOfOld > 0, "#ff6666", "default"))
 ```
 
 </details>
