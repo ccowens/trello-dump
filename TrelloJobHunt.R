@@ -81,7 +81,7 @@ the_cards <- left_join(the_cards, the_list_ids) %>%
 # Split the name field into Job and Company -------------------------------
 
 the_cards <- the_cards %>% 
-  mutate(name = str_replace(name, "\\(([^)]+)\\) ", "\\1: ")) %>% 
+  mutate(name = str_replace(name, "\\(([^()]+(?:\\([^()]*\\))?)\\) ", "\\1: ")) %>% 
   separate(name, into=c("Company","Job"), sep=": ", extra="merge", fill="right")
 
 
