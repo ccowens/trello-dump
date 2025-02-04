@@ -213,10 +213,11 @@ ggplot(rejects, aes(DaysToReject)) +
 
 ```{r rejectiontable}
 
-rejects %>% 
+rejects %>%
+  mutate(Job = cell_spec(Job, "html", link=LinkToCard)) %>% 
   select(Job, Company, DaysToReject) %>%
   arrange(desc(DaysToReject)) %>% 
-  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
+  kable(escape=FALSE, format="html") %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
 row_spec(0, bold=T)
 
 ```
