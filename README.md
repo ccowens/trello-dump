@@ -12,7 +12,7 @@ This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://git
 -   A CSV file that preserves the column type info for this CSV file
 
 ``` mermaid
-
+%%{init: {"theme": "default", "flowchart": {"subGraphTitleMargin": {"top": 10, "bottom": 30}}}}%%
 graph
     Z[Trello] o--o Y(*&nbsp;My Job Hunting Board&nbsp;*)
     Y --> X[Trello API] 
@@ -36,8 +36,8 @@ subgraph For importing back into R for further analysis
     end
 subgraph For importing into another application
     A --> G[(CSV file)]
-    G --> L((*))
-    style L fill:#000
+    G --> L((&nbsp;))
+    style L fill:orange
     A --> I[(Col types file for CSV)]
     I -.- L
     L --> H[Salesforce, HubSpot, etc.]
