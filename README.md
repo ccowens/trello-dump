@@ -1,13 +1,17 @@
 # trello-dump
 
+> [!CAUTION]
+>
+> *The trelloR package doesn't work with the newest release of R (5.0) yet. You'll have to use an earlier release of R when using this script.*
+
 This **TrelloJobHunt.R** script demonstrates using the [**trelloR**](https://github.com/jchrom/trelloR) package to get useful information out of a Trello board and then collect it together in a table-like format. In this case, it's a board I use for job hunting. The script creates four files:
 
--   An Excel XLSX file that can be used as a convenient activity overview or for further graphic or data processing 
+-   An Excel XLSX file that can be used as a convenient activity overview or for further graphic or data processing
 -   An RDS file (an R-specific format) that can be used for further processing in R. In this project, I use **TrelloJobHunt.Rmd** for this
 -   A CSV file that can be imported into an application that uses CSV for importing (like Salesforce or HubSpot)
--   A CSV file that preserves the column type info for this CSV file 
+-   A CSV file that preserves the column type info for this CSV file
 
-```mermaid
+``` mermaid
 
 graph
     Z[Trello] o--o Y(*&nbsp;My Job Hunting Board&nbsp;*)
@@ -40,7 +44,6 @@ subgraph For importing into another application
     end
 ```
 
-
 ## Data collected from Trello entry
 
 Here's how I use some of the Trello features for job hunting and how they are mapped by the script.
@@ -49,25 +52,25 @@ Here's how I use some of the Trello features for job hunting and how they are ma
 
 -   The Trello **title** is parsed as (*company*) *job* into these separate fields
 
-- Each card can be in one of these Trello **lists** to represent its *status* in the job-hunt pipeline:
+-   Each card can be in one of these Trello **lists** to represent its *status* in the job-hunt pipeline:
 
-  -   Preparing
+    -   Preparing
 
-  -   Applied
+    -   Applied
 
-  -   Interview
+    -   Interview
 
-  -   Rejected
+    -   Rejected
 
-  -   No Response
+    -   No Response
 
-  -   Offer
+    -   Offer
 
-  -   Acceptance
+    -   Acceptance
 
-  -   Declined
+    -   Declined
 
-```mermaid
+``` mermaid
 graph LR
     A(Preparing) -->|Sent| B{Applied}
     B -->|Arranged| C{Interview}
