@@ -128,31 +128,7 @@ ggplot(apps_by_week, aes(x=`Week Starting`, y=Apps)) +
 
 ```
 
-## Days to Apply from Creating Trello Ticket
 
-```{r daysapply}
-applications <- the_cards %>%  
-  filter(!Status=="Preparing") %>% 
-  mutate(DaysToApply = as.numeric(ApplyDate-CardCreated))
-
-make_stats_table(applications$DaysToApply, "Days")
-
-ggplot(applications, aes(DaysToApply)) + 
-  theme_light() +
-  geom_bar(fill="green")
-```
-
-<details closed><summary>**Apps sorted by days to apply**</summary>
-
-```{r daysapplytable, echo=FALSE}
-applications %>% 
-  select(Job, Company, DaysToApply) %>%
-  arrange(DaysToApply) %>% 
-  kable() %>% kable_styling("striped", position="left", full_width = FALSE) %>% 
-row_spec(0, bold=T)
-```
-
-</details>
 
 ## Age of Pending Applications
 
